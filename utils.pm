@@ -3,7 +3,7 @@ use strict;
 use LWP;
 use Encode;
 use Data::Dumper;
-use config;
+use db_config;
 
 
 sub fetch_page
@@ -68,10 +68,10 @@ sub trim
 
 sub get_dbh
 {
-    my $host = config->mysql_host();
-    my $user = config->mysql_user();
-    my $pw = config->mysql_pw();
-    my $dbh = DBI->connect("DBI:mysql:database=yr_match;host=$host", "$user", "$pw", {"RaiseError"=>1});
+    my $host = db_config->mysql_host();
+    my $user = db_config->mysql_user();
+    my $pw = db_config->mysql_pw();
+    my $dbh = DBI->connect("DBI:mysql:database=hotel_data;host=$host", "$user", "$pw", {"RaiseError"=>1});
     $dbh->do("set names utf8");
 
     return $dbh;

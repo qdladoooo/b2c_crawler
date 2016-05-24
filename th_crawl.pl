@@ -34,15 +34,12 @@ while(1) {
 sub url_producer
 {
     #数据库连接信息
-    my $host = config->mysql_host();
-    my $user = config->mysql_user();
-    my $pw = config->mysql_pw();
-    my $dbh = DBI->connect("DBI:mysql:database=yr_match;host=$host", "$user", "$pw", {"RaiseError"=>1});
+    my $dbh = utils->get_dbh();
     $dbh->do("set names utf8");
     while(1) {
         if($q->pending() < 50) {
             #获取列表页网址，加入队列
-            my $sql = 'SELECT tu.id,tu.url, tu.domain_id, tu.cat_id, d.page_code FROM task_url tu INNER JOIN domain d WHERE d.id=tu.domain_id AND tu.`status`=0 ORDER BY tu.create_time ASC LIMIT 1';
+            my $sql = 'select * from task_url order by id limit 1';
             my $sth = $dbh->prepare($sql);
             $sth->execute();
             my @row = $sth->fetchrow_array();
@@ -68,16 +65,17 @@ sub process_list_url
     #得到列表页信息
     my $row = $q->dequeue();
 
-    my ($task_id, $url, $domain_id, $cat_id, $page_code) = split '######', $row;
+    my ($task_id, $city,  $url) = split '######', $row;
 
     #认领任务
     my $dbh = utils->get_dbh();
     my $sql_crawlling = 'update task_url set processer=\'' . $$ . '\' where id=' . $task_id;
     utils->log("failToWriteInCrawler        $sql_crawlling") unless($dbh->do($sql_crawlling));
 
+    $page_code = 'utf-8';
     my $content = utils->fetch_page($url, $page_code);
     #获取所需数据
-    my @data = data_picker->process($content, $domain_id, $page_code);
+    my @data = data_picker->process($content, $page_code);
 
     #遍历商品信息，根据数据完整度，添加子任务及完成情况,确定是否插入
     #图片下载到本地

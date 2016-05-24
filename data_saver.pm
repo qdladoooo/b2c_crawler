@@ -4,11 +4,6 @@ use DBI;
 use Data::Dumper;
 use utils;
 
-sub pre_save
-{
-
-}
-
 #保存数据，更新爬虫状态
 sub save
 {
@@ -70,50 +65,6 @@ sub save
     #存储完成，任务状态更新为2
     my $sql_task_done = "update task_url set status=2,processer='',product_count=${count},update_time=${now} where id=${task_id}"; 
     utils->log("failToUpdateTaskStatus      ${sql_task_done}") unless($dbh->do($sql_task_done));
-}
-
-sub get_cat_id
-{
-    shift;
-    my $cat_name = shift;
-
-    my $dbh = utils->get_dbh();
-    my $sql = "select id from category where name='${cat_name}'";
-    my $sth = $dbh->prepare($sql);
-    $sth->execute();
-    my $ref = $sth->fetchrow_hashref();
-    if($ref) {
-        return $ref->{'id'};
-    } else {
-        my $now = time();
-        $sql = "INSERT INTO category VALUES('', '${cat_name}', '-1', '2', '$now', '$now')";
-        $dbh->do($sql);
-        my $id = $dbh->{q{mysql_insertid}};
-
-        return $id ? $id : 0;
-    }
-}
-
-sub get_brand_id
-{
-    shift;
-    my $brand_name = shift;
-
-    my $dbh = utils->get_dbh();
-    my $sql = "select id from brand where name='${brand_name}'";
-    my $sth = $dbh->prepare($sql);
-    $sth->execute();
-    my $ref = $sth->fetchrow_hashref();
-    if($ref) {
-        return $ref->{'id'};
-    } else {
-        my $now = time();
-        $sql = "INSERT INTO brand VALUES('', '${brand_name}', '-1', '2', '$now', '$now')";
-        $dbh->do($sql);
-        my $id = $dbh->{q{mysql_insertid}};
-
-        return $id ? $id : 0;
-    }
 }
 
 return 1;

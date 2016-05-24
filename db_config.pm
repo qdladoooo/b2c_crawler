@@ -1,9 +1,9 @@
-package config;
+package db_config;
 use strict;
 
 my $host = 'localhost';
 my $user = 'root';
-my $pw = 'yrmysql1234';
+my $pw = '5533';
 
 sub mysql_host {return $host;}
 sub mysql_user {return $user;}
