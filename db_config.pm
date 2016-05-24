@@ -2,8 +2,8 @@ package db_config;
 use strict;
 
 my $host = 'localhost';
-my $user = 'root';
-my $pw = '5533';
+my $user = 'night_manager';
+my $pw = 'nightynight';
 
 sub mysql_host {return $host;}
 sub mysql_user {return $user;}
